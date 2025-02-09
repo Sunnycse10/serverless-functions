@@ -1,0 +1,7 @@
+# serverless applications developed for comparing autoscaling and scheduling performance between AWS Lambda, Google Cloud Functions and Microsoft Azure Functions
+
+### 1. Autoscaling test function
+A function designed to handle computational tasks, such as calculating factorials, was created to test autoscaling behavior under high-concurrency conditions. The function accepted input parameters via HTTP triggers to simulate dynamic workloads. The core logic of the function was to compute the factorial of numbers up to a given limit provided via an HTTP request. The limit parameter could be passed as a query parameter or in the request body, and the functions handled both input methods. If no limit was provided, a default value of 10 was used. The functions returned a JSON response with the computed factorials or an appropriate error message in the event of invalid input or unexpected errors.
+
+### 2. Scheduling test function
+The second application was developed to analyze the scheduling behavior of serverless platforms. This application involved a scheduled trigger that invoked a lightweight serverless function periodically to measure the invocation time. Additionally, the function was tested with delayed schedules to observe the potential impact of cold starts on invocation latency and response duration. The design and implementation of the function ensured consistency across the three platforms: AWS Lambda, GCF, and Azure Functions.
