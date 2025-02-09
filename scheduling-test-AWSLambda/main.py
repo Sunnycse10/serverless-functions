@@ -1,46 +1,44 @@
 import json
-import math
-
-def factorials(limit):
-    """Compute factorials of numbers up to the limit."""
-    result = {}
-    for i in range(1, limit + 1):
-        result[i] = math.factorial(i)
-    return result
+from datetime import datetime, timezone
+import logging
 
 def lambda_handler(event, context):
-    """AWS Lambda handler for computing factorials up to a given limit."""
     try:
-        # Parse 'limit' from query parameters or body
-        limit = event.get("queryStringParameters", {}).get("limit")
-        if not limit:
+        # Get the current UTC time
+        invocation_time = datetime.now(timezone.utc).isoformat()
+        
+        # Try to parse the JSON body of the request
+        request_data = {}
+        if 'body' in event:
             try:
-                body = json.loads(event.get("body", "{}"))
-                limit = body.get("limit", 10)
-            except (ValueError, TypeError):
-                limit = 10  # Default limit if no input is provided
-
-        # Ensure limit is a valid integer
-        limit = int(limit)
-        if limit <= 0:
-            return {
-                "statusCode": 400,
-                "body": json.dumps({"message": "Invalid limit provided"}),
-                "headers": {"Content-Type": "application/json"},
-            }
-
-        # Perform the computation
-        factorials_result = factorials(limit)
-
+                request_data = json.loads(event['body'])  # This assumes the body is JSON
+            except ValueError:
+                request_data = {}
+        
+        # Create the log entry
+        log_entry = {
+            "message": "Function invoked successfully",
+            "invocation_time": invocation_time,
+            "scheduler_payload": request_data
+        }
+        
+        print(json.dumps(log_entry))
+        
+        # Return the HTTP response
         return {
-            "statusCode": 200,
-            "body": json.dumps(factorials_result),
-            "headers": {"Content-Type": "application/json"},
+            'statusCode': 200,
+            'body': json.dumps(log_entry),
+            'headers': {
+                'Content-Type': 'application/json'
+            }
         }
 
     except Exception as e:
+        # Handle any errors
         return {
-            "statusCode": 500,
-            "body": json.dumps({"message": str(e)}),
-            "headers": {"Content-Type": "application/json"},
+            'statusCode': 500,
+            'body': json.dumps({"error": str(e)}),
+            'headers': {
+                'Content-Type': 'application/json'
+            }
         }
